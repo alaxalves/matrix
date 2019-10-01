@@ -8,3 +8,12 @@ RUN apt update && \
                    openssh-client \
                    openssh-server \
                    libopenmpi-dev
+
+COPY . /matrix
+
+WORKDIR /matrix
+
+ENV PROCESSORS=1
+
+RUN make
+ENTRYPOINT ["make", "run"] 
