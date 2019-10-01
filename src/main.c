@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv) {
 
-    int my_rank=0, p=0, source=0, dest=0, x=0;
+    int processor_id=0, p=0, source=0, dest=0, x=0;
 
     complex **data1, **data2, **data3, **data4;
     data1 = malloc(N * sizeof(complex *));
@@ -29,50 +29,40 @@ int main(int argc, char **argv) {
 
     MPI_Init(&argc, &argv);
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+    MPI_Comm_rank(MPI_COMM_WORLD, &processor_id);
 
     MPI_Comm_size(MPI_COMM_WORLD, &p);
 
     /* Setup description of the 4 MPI_FLOAT fields x, y, z, velocity */
     MPI_Datatype mystruct;
-    int          blocklens[2] = { 1, 1 };
-    MPI_Aint     indices[2] = { 0, sizeof(float) };
+    int blocklens[2] = { 1, 1 };
+    MPI_Aint indexes[2] = { 0, sizeof(float) };
     MPI_Datatype old_types[2] = { MPI_FLOAT, MPI_FLOAT };
 
     /* Make relative */
-    MPI_Type_create_struct( 2, blocklens, indices, old_types, &mystruct );
+    MPI_Type_create_struct( 2, blocklens, indexes, old_types, &mystruct );
     MPI_Type_commit( &mystruct );
 
-
-    int i,j;
+    int i=0, j=0;
 
     double startTime, stopTime;
 
-    //Starting and send rows of data1, data2
-
-    int offset;
-
-    int tag = 345;
-
+    int offset=0, tag=345;
     int rows = N/p;
-
-    int lb = my_rank*rows;
+    int lb = processor_id*rows;
     int hb = lb + rows;
 
-    printf("%d have lb = %d and hb = %d\n", my_rank, lb, hb);
+    printf("Processor: %d | id*Rows = %d and id*Rows+Rows = %d\n", processor_id, lb, hb);
 
     //Starting and send rows of data1, data2
 
-
-    if(my_rank == 0){
+    if(processor_id == 0){
         getData(input_matrix_1, data1);
         getData(input_matrix_2, data2);
 
-        /* Start Clock */
-        printf("\nStarting clock.\n");
         startTime = MPI_Wtime();
 
-        for(i=1;i<p;i++){
+        for(i=1; i<p; i++){
             offset=i*rows;
             for(j = offset; j < (offset+rows); j++){
                 MPI_Send(&data1[j][0], N, mystruct, i, tag, MPI_COMM_WORLD);
@@ -125,7 +115,7 @@ int main(int argc, char **argv) {
 
     //Receving rows of data1, data2
 
-    if(my_rank == 0){
+    if(processor_id == 0){
         for(i=1;i<p;i++){
             offset=i*rows;
             for(j = offset; j < (offset+rows); j++){
@@ -143,7 +133,7 @@ int main(int argc, char **argv) {
 
     //Starting and send columns of data1, data2
 
-    if(my_rank == 0){
+    if(processor_id == 0){
         transpose(data1, data3);
         transpose(data2, data4);
 
@@ -200,7 +190,7 @@ int main(int argc, char **argv) {
 
     //Receving columns of data1, data2
 
-    if(my_rank == 0){
+    if(processor_id == 0){
         for(i=1;i<p;i++){
             offset=i*rows;
             for(j = offset; j < (offset+rows); j++){
@@ -216,7 +206,7 @@ int main(int argc, char **argv) {
     }
 
 
-    if(my_rank == 0){
+    if(processor_id == 0){
         transpose(data3,data1);
         transpose(data4,data2);
         mmpoint(data1, data2, data3);
@@ -224,7 +214,7 @@ int main(int argc, char **argv) {
 
     //Starting and send rows of data1, data2
 
-    if(my_rank == 0){
+    if(processor_id == 0){
         for(i=1;i<p;i++){
             offset=i*rows;
             for(j = offset; j < (offset+rows); j++){
@@ -258,10 +248,9 @@ int main(int argc, char **argv) {
 
     free(vec);
 
-
     //Receving rows of data1, data2
 
-    if(my_rank == 0){
+    if(processor_id == 0){
         for(i=1;i<p;i++){
             offset=i*rows;
             for(j = offset; j < (offset+rows); j++){
@@ -277,7 +266,7 @@ int main(int argc, char **argv) {
 
     //Starting and send columns of data1, data2
 
-    if(my_rank == 0){
+    if(processor_id == 0){
         transpose(data3,data4);
 
         for(i=1;i<p;i++){
@@ -298,9 +287,9 @@ int main(int argc, char **argv) {
     vec = (complex *)malloc(N * sizeof(complex));
 
     #pragma omp parallel for shared(data1,vec) private(i)
-    for (i=lb;i<hb;i++) {
+    for (i=lb; i<hb; i++) {
         #pragma omp parallel for shared(data1,vec) private(j)
-        for (j=0;j<N;j++) {
+        for (j=0 ;j<N; j++) {
             vec[j] = data4[i][j];
         }
         c_fft1d(vec, N, -1);
@@ -314,7 +303,7 @@ int main(int argc, char **argv) {
 
     //Receving columns of data1, data2
 
-    if(my_rank == 0){
+    if(processor_id == 0){
         for(i=1;i<p;i++){
             offset=i*rows;
             for(j = offset; j < (offset+rows); j++){
@@ -328,7 +317,7 @@ int main(int argc, char **argv) {
 
     }
 
-    if(my_rank == 0){
+    if(processor_id == 0){
         transpose(data4,data3);
         /* Stop Clock */
         stopTime = MPI_Wtime();
@@ -339,7 +328,7 @@ int main(int argc, char **argv) {
 
     MPI_Finalize();
 
-    if(my_rank == 0){
+    if(processor_id == 0){
         printfile(output_matrix, data3);
     }
 
