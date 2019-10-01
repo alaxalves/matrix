@@ -1,6 +1,7 @@
 #include "functions.h"
 
-int main(int argc, char **argv){
+int main(int argc, char **argv) {
+
     int my_rank=0, p=0, source=0, dest=0, x=0;
 
     complex **data1, **data2, **data3, **data4;
@@ -19,8 +20,8 @@ int main(int argc, char **argv){
     complex *vec;
 
     // Input Matrices
-    char input_matrix_1[21] = "input/sample_matrix_1"; 
-    char input_matrix_2[21] = "input/sample_matrix_2";
+    char input_matrix_1[22] = "input/sample_matrix_1"; 
+    char input_matrix_2[22] = "input/sample_matrix_2";
     // Output Matrix
     char output_matrix[15] = "omp.out";
 
