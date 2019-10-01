@@ -16,4 +16,5 @@ WORKDIR /matrix
 ENV PROCESSORS=1
 
 RUN make
-ENTRYPOINT ["make", "run"] 
+RUN ls
+ENTRYPOINT ["bash -c 'make run'"] 

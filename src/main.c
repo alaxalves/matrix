@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
     char input_matrix_1[22] = "input/sample_matrix_1"; 
     char input_matrix_2[22] = "input/sample_matrix_2";
     // Output Matrix
-    char output_matrix[15] = "omp.out";
+    char output_matrix[21] = "convolutioned_matrix";
 
     MPI_Status status;
 

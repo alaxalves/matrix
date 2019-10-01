@@ -8,7 +8,7 @@ run:
 	@mpirun --allow-run-as-root -n $(PROCESSORS) ./main
 
 clean:
-	@rm -rf *.o main
+	@rm -rf *.o main convolutioned_matrix
 	@echo ">>>>> CLEANED SUCCESSFULLY <<<<<"
 
 PROCESSORS ?= 1

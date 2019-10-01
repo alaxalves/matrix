@@ -54,4 +54,4 @@ dkms.conf
 # Compilation results
 main
 main.o
-omp.out
+convolutioned_matrix
