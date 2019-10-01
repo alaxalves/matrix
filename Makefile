@@ -1,6 +1,6 @@
 
-program: main.c
-	@mpicc -c main.c -fopenmp
+program: src/main.c
+	@mpicc -c src/main.c -fopenmp
 	@mpicc -o main main.o -fopenmp -lm
 	@echo ">>>>> COMPILED SUCCESSFULLY <<<<<"
 

@@ -108,8 +108,8 @@ void getData(char fileName[15], complex **data){
 
     int i=0, j=0, result=0;
 
-    for (i=0; i<N ;i++){
-        for (j=0;j<N;j++){
+    for (i=0; i<N; i++){
+        for (j=0; j<N; j++){
             result = fscanf(file,"%g",&data[i][j].r);
             data[i][j].i = 0.00;
         }

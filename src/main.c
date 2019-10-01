@@ -1,4 +1,4 @@
-#include "functions.h"
+#include "libs/functions.h"
 
 int main(int argc, char **argv) {
 
