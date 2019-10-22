@@ -68,27 +68,27 @@ std::vector<int> convolution(std::vector<int> data, int rows, int columns, std::
 	int x1, x2, a, b, x, y;
 
 #pragma omp parallel
-# pragma omp for private(x, y, a, b, x1, x2) 
-	for (int z = 0; z < rows * columns; ++z)
-	{
-		x = z / columns;
-		y = z % columns;
-
-		for (int i = 0; i < FILTER_ROW_SIZE; ++i)
+	#pragma omp for private(x, y, a, b, x1, x2)
+		for (int z = 0; z < rows * columns; ++z)
 		{
-			for (int j = 0; j < FILTER_COLUMN_SIZE; ++j)
+			x = z / columns;
+			y = z % columns;
+
+			for (int i = 0; i < FILTER_ROW_SIZE; ++i)
 			{
-				a = x + i - FILTER_ROW_SIZE / 2;
-				b = y + j - FILTER_COLUMN_SIZE / 2;
+				for (int j = 0; j < FILTER_COLUMN_SIZE; ++j)
+				{
+					a = x + i - FILTER_ROW_SIZE / 2;
+					b = y + j - FILTER_COLUMN_SIZE / 2;
 
-				x1 = (a < 0) ? rows + a : (a > rows - 1) ? a - rows : a;
-				x2 = (b < 0) ? columns + b : (b > columns - 1) ? b - columns : b;
+					x1 = (a < 0) ? rows + a : (a > rows - 1) ? a - rows : a;
+					x2 = (b < 0) ? columns + b : (b > columns - 1) ? b - columns : b;
 
-				output[x * columns + y] += data[x1 * columns + x2] * filter[i * FILTER_COLUMN_SIZE + j];
+					output[x * columns + y] += data[x1 * columns + x2] * filter[i * FILTER_COLUMN_SIZE + j];
 
+				}
 			}
 		}
-	}
 
 	return output;
 }
@@ -189,7 +189,7 @@ int main(int argc, char** argv)
 	timeNow = std::chrono::high_resolution_clock::now();
 	std::vector<int> out = convolution(matrixData, height, width, filtervec);
 
-	std::ofstream outData(".\\input\\output.txt", std::ios::out);
+	std::ofstream outData("./input/output.txt", std::ios::out);
 
 	for (int i = 0; i < height; i++) 
 	{
