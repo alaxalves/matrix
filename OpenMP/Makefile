@@ -1,5 +1,5 @@
-program: pspd-proj1.cpp
-	@g++ -fopenmp pspd-proj1.cpp --std=c++11 -g -Wall
+program: src/pspd-proj1.cpp
+	@g++ -fopenmp src/pspd-proj1.cpp --std=c++11 -g -Wall
 	@echo ">>>>> COMPILED SUCCESSFULLY <<<<<"
 
 run:
